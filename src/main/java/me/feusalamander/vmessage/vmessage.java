@@ -17,7 +17,7 @@ import java.util.Objects;
         id = "vmessage",
         name = "Vmessage",
         version = "1.0",
-        description = "A velocity plugin that creates a multiserver chat for the networth",
+        description = "A velocity plugin that creates a multi server chat for the network",
         authors = {"FeuSalamander"}
 )
 public class vmessage {
