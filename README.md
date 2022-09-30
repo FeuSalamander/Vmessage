@@ -5,3 +5,4 @@ Ever wanted to have your messages sent globally across your Velocity proxy? Here
 - LuckPerms Prefix Support
 - Velocity Support
 - (thanks @JosTheDude for the description)
+- You can also check my Bukkit plugin https://github.com/FeuSalamander/MiniWalls
