@@ -46,7 +46,14 @@ public class vmessage {
         this.metricsFactory = metricsFactory;
         this.dataDirectory = dataDirectory;
     }
+    private String messageraw = "";
+    private String joinraw = "";
+    private String leaveraw = "";
+    private String changeraw = "";
     private String message = "";
+    private String join = "";
+    private String leave = "";
+    private String change = "";
     private boolean messageb = false;
     private boolean joinb = false;
     private boolean leaveb = false;
@@ -63,41 +70,58 @@ public class vmessage {
         if(config.getBoolean("Join.enabled"))joinb = true;
         if(config.getBoolean("Leave.enabled"))leaveb = true;
         if(config.getBoolean("Server-change.enabled"))changeb = true;
-        message = getmessage("Message.format");
+        messageraw = config.getString("Message.format");
+        joinraw = config.getString("Join.format");
+        leaveraw = config.getString("Leave.format");
+        changeraw = config.getString("Server-change.format");
     }
     @Subscribe
     private void onMessage(PlayerChatEvent e){
-        proxy.getAllServers().stream().forEach(registeredServer -> sendMessage(registeredServer, e.getPlayer(), e.getMessage()));
+        if(messageb) proxy.getAllServers().forEach(registeredServer -> sendMessage(registeredServer, e.getPlayer(), e.getMessage()));
     }
     @Subscribe
     private void onJoin(LoginEvent e){
-
+        if(joinb) proxy.getAllServers().forEach(registeredServer -> join(registeredServer, e.getPlayer()));
     }
     @Subscribe
     private void onLeave(DisconnectEvent e){
-
+        if(leaveb) proxy.getAllServers().forEach(registeredServer -> leave(registeredServer, e.getPlayer()));
     }
     @Subscribe
     private void onChange(ServerConnectedEvent e){
 
     }
     private void sendMessage(RegisteredServer s, Player p, String m){
-        message = message.replaceAll("#player#", p.getUsername());
-        message = message.replaceAll("#message#",m);
-        message = message.replaceAll("#server#",p.getCurrentServer().get().getServerInfo().getName());
-        message = message.replaceAll("&", "§");
+        message = messageraw.replaceAll("#player#", p.getUsername()).replaceAll("#message#",m).replaceAll("#server#",p.getCurrentServer().get().getServerInfo().getName()).replaceAll("&", "§");
         if(!(Objects.equals(p.getCurrentServer().get().getServerInfo().getName(), s.getServerInfo().getName()))){
             if(proxy.getPluginManager().getPlugin("luckperms").isPresent()){
                 LuckPerms api = LuckPermsProvider.get();
                 User user = api.getPlayerAdapter(Player.class).getUser(p);
                 message = message.replaceAll("#prefix#", user.getCachedData().getMetaData().getPrefix().replaceAll("&", "§"));
-                s.sendMessage(Component.text(message));
-                message = getmessage("Message.format");
-            }else{
-                s.sendMessage(Component.text(message));
-                message = getmessage("Message.format");
             }
+            s.sendMessage(Component.text(message));
+            message = "";
         }
+    }
+    private void join(RegisteredServer s, Player p){
+        join = joinraw.replaceAll("#player#", p.getUsername());
+        if(proxy.getPluginManager().getPlugin("luckperms").isPresent()){
+            LuckPerms api = LuckPermsProvider.get();
+            User user = api.getPlayerAdapter(Player.class).getUser(p);
+            join = join.replaceAll("#prefix#", user.getCachedData().getMetaData().getPrefix().replaceAll("&", "§"));
+        }
+        s.sendMessage(Component.text(join));
+        join = "";
+    }
+    private void leave(RegisteredServer s, Player p){
+        leave = leaveraw.replaceAll("#player#", p.getUsername());
+        if(proxy.getPluginManager().getPlugin("luckperms").isPresent()){
+            LuckPerms api = LuckPermsProvider.get();
+            User user = api.getPlayerAdapter(Player.class).getUser(p);
+            leave = leave.replaceAll("#prefix#", user.getCachedData().getMetaData().getPrefix().replaceAll("&", "§"));
+        }
+        s.sendMessage(Component.text(leave));
+        leave = "";
     }
     private void createconfig(){
         File dataDirectoryFile = this.dataDirectory.toFile();
@@ -113,11 +137,5 @@ public class vmessage {
                 e.printStackTrace();
             }
         }
-    }
-    private String getmessage(String s){
-        File directory = dataDirectory.toFile();
-        File f = new File(directory, "config.toml");
-        Toml config = new Toml().read(f);
-        return config.getString(s);
     }
 }
