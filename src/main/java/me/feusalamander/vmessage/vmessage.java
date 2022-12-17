@@ -14,7 +14,6 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import net.kyori.adventure.text.Component;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
-import net.luckperms.api.event.player.PlayerLoginProcessEvent;
 import net.luckperms.api.model.user.User;
 import org.slf4j.Logger;
 import java.io.File;
@@ -23,6 +22,9 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+
 @Plugin(
         id = "vmessage",
         name = "Vmessage",
@@ -77,51 +79,69 @@ public class vmessage {
     }
     @Subscribe
     private void onMessage(PlayerChatEvent e){
-        if(messageb) proxy.getAllServers().forEach(registeredServer -> sendMessage(registeredServer, e.getPlayer(), e.getMessage()));
-    }
-    @Subscribe
-    private void onJoin(LoginEvent e){
-        if(joinb) proxy.getAllServers().forEach(registeredServer -> join(registeredServer, e.getPlayer()));
-    }
-    @Subscribe
-    private void onLeave(DisconnectEvent e){
-        if(leaveb) proxy.getAllServers().forEach(registeredServer -> leave(registeredServer, e.getPlayer()));
-    }
-    @Subscribe
-    private void onChange(ServerConnectedEvent e){
-
-    }
-    private void sendMessage(RegisteredServer s, Player p, String m){
-        message = messageraw.replaceAll("#player#", p.getUsername()).replaceAll("#message#",m).replaceAll("#server#",p.getCurrentServer().get().getServerInfo().getName()).replaceAll("&", "§");
-        if(!(Objects.equals(p.getCurrentServer().get().getServerInfo().getName(), s.getServerInfo().getName()))){
+        if(messageb){
+            Player p = e.getPlayer();
+            String m = e.getMessage();
+            message = messageraw.replaceAll("#player#", p.getUsername()).replaceAll("#message#",m).replaceAll("#server#",p.getCurrentServer().get().getServerInfo().getName()).replaceAll("&", "§");
             if(proxy.getPluginManager().getPlugin("luckperms").isPresent()){
                 LuckPerms api = LuckPermsProvider.get();
                 User user = api.getPlayerAdapter(Player.class).getUser(p);
                 message = message.replaceAll("#prefix#", user.getCachedData().getMetaData().getPrefix().replaceAll("&", "§"));
             }
-            s.sendMessage(Component.text(message));
+            proxy.getAllServers().forEach(registeredServer -> sendMessage(registeredServer, p));
             message = "";
         }
     }
-    private void join(RegisteredServer s, Player p){
-        join = joinraw.replaceAll("#player#", p.getUsername());
-        if(proxy.getPluginManager().getPlugin("luckperms").isPresent()){
-            LuckPerms api = LuckPermsProvider.get();
-            User user = api.getPlayerAdapter(Player.class).getUser(p);
-            join = join.replaceAll("#prefix#", user.getCachedData().getMetaData().getPrefix().replaceAll("&", "§"));
+    @Subscribe
+    private void onJoin(LoginEvent e){
+        if(joinb){
+            Player p = e.getPlayer();
+            join = joinraw.replaceAll("#player#", p.getUsername());
+            if(proxy.getPluginManager().getPlugin("luckperms").isPresent()){
+                LuckPerms api = LuckPermsProvider.get();
+                User user = api.getPlayerAdapter(Player.class).getUser(p);
+                join = join.replaceAll("#prefix#", user.getCachedData().getMetaData().getPrefix().replaceAll("&", "§"));
+            }
+            proxy.getAllServers().forEach(registeredServer -> registeredServer.sendMessage(Component.text(join)));
+            join = "";
         }
-        s.sendMessage(Component.text(join));
-        join = "";
     }
-    private void leave(RegisteredServer s, Player p){
-        leave = leaveraw.replaceAll("#player#", p.getUsername());
-        if(proxy.getPluginManager().getPlugin("luckperms").isPresent()){
-            LuckPerms api = LuckPermsProvider.get();
-            User user = api.getPlayerAdapter(Player.class).getUser(p);
-            leave = leave.replaceAll("#prefix#", user.getCachedData().getMetaData().getPrefix().replaceAll("&", "§"));
+    @Subscribe
+    private void onLeave(DisconnectEvent e){
+        if(leaveb){
+            Player p = e.getPlayer();
+            leave = leaveraw.replaceAll("#player#", p.getUsername());
+            if(proxy.getPluginManager().getPlugin("luckperms").isPresent()){
+                LuckPerms api = LuckPermsProvider.get();
+                User user = api.getPlayerAdapter(Player.class).getUser(p);
+                leave = leave.replaceAll("#prefix#", user.getCachedData().getMetaData().getPrefix().replaceAll("&", "§"));
+            }
+            proxy.getAllServers().forEach(registeredServer -> registeredServer.sendMessage(Component.text(leave)));
+            leave = "";
         }
-        s.sendMessage(Component.text(leave));
-        leave = "";
+    }
+    @Subscribe
+    private void onChange(ServerConnectedEvent e){
+        if(changeb){
+            Optional<RegisteredServer> old = e.getPreviousServer();
+            RegisteredServer New = e.getServer();
+            Player p = e.getPlayer();
+            if(old.isPresent()){
+                change = changeraw.replaceAll("#player#", p.getUsername()).replaceAll("#oldserver#", old.get().getServerInfo().getName()).replaceAll("#server#", New.getServerInfo().getName());
+                if(proxy.getPluginManager().getPlugin("luckperms").isPresent()){
+                    LuckPerms api = LuckPermsProvider.get();
+                    User user = api.getPlayerAdapter(Player.class).getUser(p);
+                    change = change.replaceAll("#prefix#", user.getCachedData().getMetaData().getPrefix().replaceAll("&", "§"));
+                }
+                proxy.getAllServers().forEach(registeredServer -> registeredServer.sendMessage(Component.text(change)));
+                change = "";
+            }
+        }
+    }
+    private void sendMessage(RegisteredServer s, Player p){
+        if(!(Objects.equals(p.getCurrentServer().get().getServerInfo().getName(), s.getServerInfo().getName()))){
+            s.sendMessage(Component.text(message));
+        }
     }
     private void createconfig(){
         File dataDirectoryFile = this.dataDirectory.toFile();
