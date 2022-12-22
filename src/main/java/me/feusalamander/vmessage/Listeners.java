@@ -3,8 +3,10 @@ package me.feusalamander.vmessage;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
+import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
+import com.velocitypowered.api.proxy.LoginPhaseConnection;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
@@ -15,6 +17,7 @@ import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public final class Listeners {
     private static final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.builder()
@@ -55,21 +58,6 @@ public final class Listeners {
             }
         });
     }
-
-    @Subscribe
-    private void onJoin(PostLoginEvent e){
-        if (!configuration.isJoinEnabled()) {
-            return;
-        }
-        Player p = e.getPlayer();
-        String message = configuration.getJoinFormat().replace("#player#", p.getUsername());
-        if (luckPermsAPI != null){
-            User user = luckPermsAPI.getPlayerAdapter(Player.class).getUser(p);
-            message = message.replace("#prefix#", Objects.requireNonNull(user.getCachedData().getMetaData().getPrefix()));
-        }
-        proxyServer.sendMessage(SERIALIZER.deserialize(message));
-    }
-
     @Subscribe
     private void onLeave(DisconnectEvent e){
         if (!configuration.isLeaveEnabled()) {
@@ -87,21 +75,36 @@ public final class Listeners {
 
     @Subscribe
     private void onChange(ServerConnectedEvent e){
-        if (!configuration.isChangeEnabled()) {
+        if (!configuration.isChangeEnabled()&&!configuration.isJoinEnabled()) {
             return;
         }
-        e.getPreviousServer().ifPresent(server -> {
-            RegisteredServer actual = e.getServer();
-            Player p = e.getPlayer();
+        Optional<RegisteredServer> server = e.getPreviousServer();
+        Player p = e.getPlayer();
+        RegisteredServer actual = e.getServer();
+        if(server.isPresent()){
+            if (!configuration.isChangeEnabled()) {
+                return;
+            }
+            RegisteredServer pre = server.get();
             String message = configuration.getChangeFormat()
                     .replace("#player#", p.getUsername())
-                    .replace("#oldserver#", server.getServerInfo().getName())
+                    .replace("#oldserver#", pre.getServerInfo().getName())
                     .replace("#server#", actual.getServerInfo().getName());
             if (luckPermsAPI != null){
                 User user = luckPermsAPI.getPlayerAdapter(Player.class).getUser(p);
                 message = message.replace("#prefix#", Objects.requireNonNull(user.getCachedData().getMetaData().getPrefix()));
             }
             proxyServer.sendMessage(SERIALIZER.deserialize(message));
-        });
+        }else{
+            if (!configuration.isJoinEnabled()) {
+                return;
+            }
+            String message = configuration.getJoinFormat().replace("#player#", p.getUsername());
+            if (luckPermsAPI != null){
+                User user = luckPermsAPI.getPlayerAdapter(Player.class).getUser(p);
+                message = message.replace("#prefix#", Objects.requireNonNull(user.getCachedData().getMetaData().getPrefix()));
+            }
+            proxyServer.sendMessage(SERIALIZER.deserialize(message));
+        }
     }
 }

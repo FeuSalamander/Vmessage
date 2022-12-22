@@ -1,6 +1,9 @@
 package me.feusalamander.vmessage;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.command.CommandManager;
+import com.velocitypowered.api.command.CommandMeta;
+import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.plugin.Dependency;
@@ -35,13 +38,17 @@ public class VMessage {
     @Subscribe
     private void onProxyInitialization(ProxyInitializeEvent event) {
         Configuration configuration = Configuration.load(dataDirectory);
-
         if (configuration == null) {
             return;
         }
-
         metricsFactory.make(this, 16527);
         proxy.getEventManager().register(this, new Listeners(proxy, configuration));
         logger.info("Vmessage by FeuSalamander is working !");
+        CommandManager commandManager = proxy.getCommandManager();
+        CommandMeta commandMeta = commandManager.metaBuilder("Vmessage")
+                .plugin(this)
+                .build();
+        SimpleCommand command = new ReloadCommand(dataDirectory, configuration);
+        commandManager.register(commandMeta, command);
     }
 }

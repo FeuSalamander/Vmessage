@@ -8,14 +8,15 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 public final class Configuration {
-    private final String messageFormat;
-    private final String joinFormat;
-    private final String leaveFormat;
-    private final String changeFormat;
-    private final boolean messageEnabled;
-    private final boolean joinEnabled;
-    private final boolean leaveEnabled;
-    private final boolean changeEnabled;
+    private String messageFormat;
+    private String joinFormat;
+    private String leaveFormat;
+    private String changeFormat;
+    private boolean messageEnabled;
+    private boolean joinEnabled;
+    private boolean leaveEnabled;
+    private boolean changeEnabled;
+    private final Toml config;
 
     Configuration(Toml config) {
         messageFormat = config.getString("Message.format", "");
@@ -27,6 +28,8 @@ public final class Configuration {
         joinEnabled = config.getBoolean("Join.enabled", false);
         leaveEnabled = config.getBoolean("Leave.enabled", false);
         changeEnabled = config.getBoolean("Server-change.enabled", false);
+        this.config = config;
+
     }
 
     static Configuration load(Path dataDirectory) {
@@ -86,5 +89,16 @@ public final class Configuration {
 
     public boolean isChangeEnabled() {
         return this.changeEnabled;
+    }
+    void reload(){
+        messageFormat = config.getString("Message.format", "");
+        joinFormat = config.getString("Join.format", "");
+        leaveFormat = config.getString("Leave.format", "");
+        changeFormat = config.getString("Server-change.format", "");
+
+        messageEnabled = config.getBoolean("Message.enabled", false);
+        joinEnabled = config.getBoolean("Join.enabled", false);
+        leaveEnabled = config.getBoolean("Leave.enabled", false);
+        changeEnabled = config.getBoolean("Server-change.enabled", false);
     }
 }
