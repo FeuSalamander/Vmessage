@@ -1,7 +1,8 @@
 [Message]
 #place holders:
 #- "#player#" : return the player name
-#- "#prefix#" : return the player's luckperms prefix (don't place it if you don't have luckperms on your server)
+#- "#prefix#" : return the player's luckperms prefix
+#- "#suffix#" : return the player's luckperms suffix
 #- "#message#" : return the player's message
 #- "#server#" : return the player's server name
 format = "&a(#server#) #prefix# #player# &8&l> &r#message#"
@@ -9,19 +10,22 @@ enabled = true
 [Join]
 #place holders:
 #- "#player#" : return the player name
-#- "#prefix#" : return the player's luckperms prefix (don't place it if you don't have luckperms on your server)
+#- "#prefix#" : return the player's luckperms prefix
+#- "#suffix#" : return the player's luckperms suffix
 format = "&7#prefix# #player# &ejoined the network"
 enabled = true
 [Leave]
 #place holders:
 #- "#player#" : return the player name
-#- "#prefix#" : return the player's luckperms prefix (don't place it if you don't have luckperms on your server)
+#- "#prefix#" : return the player's luckperms prefix
+#- "#suffix#" : return the player's luckperms suffix
 format = "#&7prefix# #player# &eleft the network"
 enabled = true
 [Server-change]
 #place holders:
 #- "#player#" : return the player name
-#- "#prefix#" : return the player's luckperms prefix (don't place it if you don't have luckperms on your server)
+#- "#prefix#" : return the player's luckperms prefix
+#- "#suffix#" : return the player's luckperms suffix
 #- "#oldserver#" : return the previous player's server name
 #- "#server#" : return the new player's server name
 format = "&7#prefix# #player# &eleft &c#oldserver# &eto join &a#server#"

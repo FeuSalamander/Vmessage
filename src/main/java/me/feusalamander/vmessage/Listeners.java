@@ -16,6 +16,8 @@ import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.model.user.User;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -48,8 +50,7 @@ public final class Listeners {
                 .replace("#message#", m)
                 .replace("#server#", p.getCurrentServer().orElseThrow().getServerInfo().getName());
         if (luckPermsAPI != null){
-            User user = luckPermsAPI.getPlayerAdapter(Player.class).getUser(p);
-            message = message.replace("#prefix#", Objects.requireNonNull(user.getCachedData().getMetaData().getPrefix()));
+            message = luckperms(message, p);
         }
         final String finalMessage = message;
         proxyServer.getAllServers().forEach(server -> {
@@ -67,8 +68,7 @@ public final class Listeners {
         String message = configuration.getLeaveFormat()
                 .replace("#player#", p.getUsername());
         if (luckPermsAPI != null){
-            User user = luckPermsAPI.getPlayerAdapter(Player.class).getUser(p);
-            message = message.replace("#prefix#", Objects.requireNonNull(user.getCachedData().getMetaData().getPrefix()));
+            message = luckperms(message, p);
         }
         proxyServer.sendMessage(SERIALIZER.deserialize(message));
     }
@@ -91,8 +91,7 @@ public final class Listeners {
                     .replace("#oldserver#", pre.getServerInfo().getName())
                     .replace("#server#", actual.getServerInfo().getName());
             if (luckPermsAPI != null){
-                User user = luckPermsAPI.getPlayerAdapter(Player.class).getUser(p);
-                message = message.replace("#prefix#", Objects.requireNonNull(user.getCachedData().getMetaData().getPrefix()));
+                message = luckperms(message, p);
             }
             proxyServer.sendMessage(SERIALIZER.deserialize(message));
         }else{
@@ -101,10 +100,19 @@ public final class Listeners {
             }
             String message = configuration.getJoinFormat().replace("#player#", p.getUsername());
             if (luckPermsAPI != null){
-                User user = luckPermsAPI.getPlayerAdapter(Player.class).getUser(p);
-                message = message.replace("#prefix#", Objects.requireNonNull(user.getCachedData().getMetaData().getPrefix()));
+                message = luckperms(message, p);
             }
             proxyServer.sendMessage(SERIALIZER.deserialize(message));
         }
+    }
+    private String luckperms(String message, Player p){
+        User user = luckPermsAPI.getPlayerAdapter(Player.class).getUser(p);
+        if(message.contains("#prefix#")){
+            message = message.replace("#prefix#", Objects.requireNonNull(user.getCachedData().getMetaData().getPrefix()));
+        }
+        if(message.contains("#suffix#")){
+            message = message.replace("#suffix#", Objects.requireNonNull(user.getCachedData().getMetaData().getSuffix()));
+        }
+        return message;
     }
 }

@@ -1,8 +1,6 @@
 package me.feusalamander.vmessage;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
-import com.velocitypowered.api.plugin.annotation.DataDirectory;
-
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.List;
@@ -17,7 +15,6 @@ public final class ReloadCommand implements SimpleCommand {
 
     @Override
     public void execute(final Invocation invocation) {
-        CommandSource source = invocation.source();
         String[] args = invocation.arguments();
         if(args.length == 1){
             return;
