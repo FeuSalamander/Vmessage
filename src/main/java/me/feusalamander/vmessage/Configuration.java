@@ -1,7 +1,12 @@
 package me.feusalamander.vmessage;
 
 import com.moandjiezana.toml.Toml;
+import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.command.SimpleCommand;
+import com.velocitypowered.api.proxy.Player;
+import net.kyori.adventure.text.Component;
 
+import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,7 +21,8 @@ public final class Configuration {
     private boolean joinEnabled;
     private boolean leaveEnabled;
     private boolean changeEnabled;
-    private final Toml config;
+    private Toml config;
+    private static File file;
 
     Configuration(Toml config) {
         messageFormat = config.getString("Message.format", "");
@@ -29,13 +35,13 @@ public final class Configuration {
         leaveEnabled = config.getBoolean("Leave.enabled", false);
         changeEnabled = config.getBoolean("Server-change.enabled", false);
         this.config = config;
-
     }
 
     static Configuration load(Path dataDirectory) {
         Path f = createConfig(dataDirectory);
         if (f != null) {
-            Toml config = new Toml().read(f.toFile());
+            file = f.toFile();
+            Toml config = new Toml().read(file);
             return new Configuration(config);
         }
         return null;
@@ -91,14 +97,15 @@ public final class Configuration {
         return this.changeEnabled;
     }
     void reload(){
-        messageFormat = config.getString("Message.format", "");
-        joinFormat = config.getString("Join.format", "");
-        leaveFormat = config.getString("Leave.format", "");
-        changeFormat = config.getString("Server-change.format", "");
+        config = config.read(file);
+        this.messageFormat = config.getString("Message.format");
+        this.joinFormat = config.getString("Join.format");
+        this.leaveFormat = config.getString("Leave.format");
+        this.changeFormat = config.getString("Server-change.format");
 
-        messageEnabled = config.getBoolean("Message.enabled", false);
-        joinEnabled = config.getBoolean("Join.enabled", false);
-        leaveEnabled = config.getBoolean("Leave.enabled", false);
-        changeEnabled = config.getBoolean("Server-change.enabled", false);
+        this.messageEnabled = config.getBoolean("Message.enabled");
+        this.joinEnabled = config.getBoolean("Join.enabled");
+        this.leaveEnabled = config.getBoolean("Leave.enabled");
+        this.changeEnabled = config.getBoolean("Server-change.enabled");
     }
 }

@@ -6,6 +6,7 @@ import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
+import com.velocitypowered.api.event.player.TabCompleteEvent;
 import com.velocitypowered.api.proxy.LoginPhaseConnection;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -22,7 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 public final class Listeners {
-    private static final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.builder()
+    public static final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.builder()
             .character('&')
             .hexColors()
             .build();
@@ -65,6 +66,9 @@ public final class Listeners {
             return;
         }
         Player p = e.getPlayer();
+        if(p.getCurrentServer().isEmpty()){
+            return;
+        }
         String message = configuration.getLeaveFormat()
                 .replace("#player#", p.getUsername());
         if (luckPermsAPI != null){
