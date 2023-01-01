@@ -5,4 +5,5 @@
 - No Setup required, but you can still customize it with the config file
 - LuckPerms Prefix Support
 - Velocity only
+- Reload command: "/vmessage reload", permission: "*"
 - You can also check my Bukkit plugin https://github.com/FeuSalamander/MiniWalls
