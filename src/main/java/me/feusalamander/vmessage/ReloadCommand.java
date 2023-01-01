@@ -1,4 +1,5 @@
 package me.feusalamander.vmessage;
+import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
@@ -17,15 +18,20 @@ public final class ReloadCommand implements SimpleCommand {
 
     @Override
     public void execute(final Invocation invocation) {
+        CommandSource source = invocation.source();
         String[] args = invocation.arguments();
         if(args.length == 0){
-            invocation.source().sendMessage(Component.text("§cUsage: /vmessage reload"));
+            source.sendMessage(Component.text("§cUsage: /vmessage reload"));
             return;
         }
         String s = args[0];
         if(s.equalsIgnoreCase("reload")){
+            if(!source.hasPermission("*")){
+                source.sendMessage(Component.text("§cYou don't have the permission to do that"));
+                return;
+            }
             config.reload();
-            invocation.source().sendMessage(Component.text("The Vmessage's config has been succefully reloaded"));
+            source.sendMessage(Component.text("The Vmessage's config has been succefully reloaded"));
         }
     }
 
