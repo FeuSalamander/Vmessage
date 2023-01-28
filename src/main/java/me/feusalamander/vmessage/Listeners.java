@@ -12,6 +12,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
@@ -27,6 +28,7 @@ public final class Listeners {
             .character('&')
             .hexColors()
             .build();
+    public static final MiniMessage mm = MiniMessage.miniMessage();
     private LuckPerms luckPermsAPI;
     private final Configuration configuration;
     private final ProxyServer proxyServer;
@@ -44,21 +46,7 @@ public final class Listeners {
         if (!configuration.isMessageEnabled()) {
             return;
         }
-        Player p = e.getPlayer();
-        String m = e.getMessage();
-        String message = configuration.getMessageFormat()
-                .replace("#player#", p.getUsername())
-                .replace("#message#", m)
-                .replace("#server#", p.getCurrentServer().orElseThrow().getServerInfo().getName());
-        if (luckPermsAPI != null){
-            message = luckperms(message, p);
-        }
-        final String finalMessage = message;
-        proxyServer.getAllServers().forEach(server -> {
-            if (!Objects.equals(p.getCurrentServer().map(ServerConnection::getServerInfo).orElse(null), server.getServerInfo())){
-                server.sendMessage(SERIALIZER.deserialize(finalMessage));
-            }
-        });
+        message(e.getPlayer(), e.getMessage());
     }
     @Subscribe
     private void onLeave(DisconnectEvent e){
@@ -74,7 +62,12 @@ public final class Listeners {
         if (luckPermsAPI != null){
             message = luckperms(message, p);
         }
-        proxyServer.sendMessage(SERIALIZER.deserialize(message));
+        if(configuration.isMinimessageEnabled()){
+            proxyServer.sendMessage(mm.deserialize(message.replaceAll("§", "")));
+        }else{
+            proxyServer.sendMessage(SERIALIZER.deserialize(message));
+        }
+
     }
 
     @Subscribe
@@ -97,7 +90,11 @@ public final class Listeners {
             if (luckPermsAPI != null){
                 message = luckperms(message, p);
             }
-            proxyServer.sendMessage(SERIALIZER.deserialize(message));
+            if(configuration.isMinimessageEnabled()){
+                proxyServer.sendMessage(mm.deserialize(message.replaceAll("§", "")));
+            }else{
+                proxyServer.sendMessage(SERIALIZER.deserialize(message));
+            }
         }else{
             if (!configuration.isJoinEnabled()) {
                 return;
@@ -106,7 +103,11 @@ public final class Listeners {
             if (luckPermsAPI != null){
                 message = luckperms(message, p);
             }
-            proxyServer.sendMessage(SERIALIZER.deserialize(message));
+            if(configuration.isMinimessageEnabled()){
+                proxyServer.sendMessage(mm.deserialize(message.replaceAll("§", "")));
+            }else{
+                proxyServer.sendMessage(SERIALIZER.deserialize(message));
+            }
         }
     }
     private String luckperms(String message, Player p){
@@ -118,5 +119,24 @@ public final class Listeners {
             message = message.replace("#suffix#", Objects.requireNonNull(user.getCachedData().getMetaData().getSuffix()));
         }
         return message;
+    }
+    public void message(Player p, String m){
+        String message = configuration.getMessageFormat()
+                .replace("#player#", p.getUsername())
+                .replace("#message#", m)
+                .replace("#server#", p.getCurrentServer().orElseThrow().getServerInfo().getName());
+        if (luckPermsAPI != null){
+            message = luckperms(message, p);
+        }
+        final String finalMessage = message;
+        proxyServer.getAllServers().forEach(server -> {
+            if (!Objects.equals(p.getCurrentServer().map(ServerConnection::getServerInfo).orElse(null), server.getServerInfo())){
+                if(configuration.isMinimessageEnabled()){
+                    server.sendMessage(mm.deserialize(finalMessage.replaceAll("§", "")));
+                }else{
+                    server.sendMessage(SERIALIZER.deserialize(finalMessage));
+                }
+            }
+        });
     }
 }

@@ -34,19 +34,4 @@ public final class ReloadCommand implements SimpleCommand {
             source.sendMessage(Component.text("The Vmessage's config has been succefully reloaded"));
         }
     }
-
-    @Override
-    public boolean hasPermission(final Invocation invocation) {
-        return invocation.source().hasPermission("*");
-    }
-
-    @Override
-    public List<String> suggest(final Invocation invocation) {
-        return List.of("reload");
-    }
-
-    @Override
-    public CompletableFuture<List<String>> suggestAsync(final Invocation invocation) {
-        return CompletableFuture.completedFuture(List.of("reload"));
-    }
 }

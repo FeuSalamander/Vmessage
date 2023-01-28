@@ -16,7 +16,7 @@ import java.nio.file.Path;
 @Plugin(
         id = "vmessage",
         name = "Vmessage",
-        version = "1.4",
+        version = "1.5",
         description = "A velocity plugin that creates a multi server chat for the network",
         authors = {"FeuSalamander"},
         dependencies = { @Dependency(id = "luckperms", optional = true) }
@@ -26,6 +26,7 @@ public class VMessage {
     private final Logger logger;
     private final Metrics.Factory metricsFactory;
     private final Path dataDirectory;
+    public Listeners listeners;
 
     @Inject
     public VMessage(ProxyServer proxy, Logger logger, Metrics.Factory metricsFactory, @DataDirectory Path dataDirectory) {
@@ -42,7 +43,8 @@ public class VMessage {
             return;
         }
         metricsFactory.make(this, 16527);
-        proxy.getEventManager().register(this, new Listeners(proxy, configuration));
+        listeners = new Listeners(proxy, configuration);
+        proxy.getEventManager().register(this, listeners);
         logger.info("Vmessage by FeuSalamander is working !");
         CommandManager commandManager = proxy.getCommandManager();
         CommandMeta commandMeta = commandManager.metaBuilder("Vmessage")
@@ -50,5 +52,10 @@ public class VMessage {
                 .build();
         SimpleCommand command = new ReloadCommand(dataDirectory, configuration);
         commandManager.register(commandMeta, command);
+        CommandMeta sendmeta = commandManager.metaBuilder("sendall")
+                .plugin(this)
+                .build();
+        SimpleCommand sendcommand = new SendCommand(this);
+        commandManager.register(sendmeta, sendcommand);
     }
 }

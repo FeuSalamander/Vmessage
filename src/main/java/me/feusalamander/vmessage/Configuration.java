@@ -21,6 +21,7 @@ public final class Configuration {
     private boolean joinEnabled;
     private boolean leaveEnabled;
     private boolean changeEnabled;
+    private boolean minimessage;
     private Toml config;
     private static File file;
 
@@ -34,6 +35,8 @@ public final class Configuration {
         joinEnabled = config.getBoolean("Join.enabled", false);
         leaveEnabled = config.getBoolean("Leave.enabled", false);
         changeEnabled = config.getBoolean("Server-change.enabled", false);
+
+        minimessage = config.getBoolean("Message-format.minimessage");
         this.config = config;
     }
 
@@ -96,6 +99,9 @@ public final class Configuration {
     public boolean isChangeEnabled() {
         return this.changeEnabled;
     }
+    public boolean isMinimessageEnabled(){
+        return  this.minimessage;
+    }
     void reload(){
         config = config.read(file);
         this.messageFormat = config.getString("Message.format");
@@ -107,5 +113,7 @@ public final class Configuration {
         this.joinEnabled = config.getBoolean("Join.enabled");
         this.leaveEnabled = config.getBoolean("Leave.enabled");
         this.changeEnabled = config.getBoolean("Server-change.enabled");
+
+        this.minimessage = config.getBoolean("Message-format.minimessage");
     }
 }

@@ -3,7 +3,8 @@
 **Ever wanted to have your messages sent globally across your Velocity proxy with LuckPerms ranks ? Here's a simple plugin to do just that!**
 
 - No Setup required, but you can still customize it with the config file
-- LuckPerms Prefix Support
+- LuckPerms Prefix and Suffix Support
 - Velocity only
 - Reload command: "/vmessage reload", permission: "*"
+- Global message command: "/sendall"
 - You can also check my Bukkit plugin https://github.com/FeuSalamander/MiniWalls
