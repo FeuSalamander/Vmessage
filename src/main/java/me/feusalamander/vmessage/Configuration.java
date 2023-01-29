@@ -1,10 +1,6 @@
 package me.feusalamander.vmessage;
 
 import com.moandjiezana.toml.Toml;
-import com.velocitypowered.api.command.CommandSource;
-import com.velocitypowered.api.command.SimpleCommand;
-import com.velocitypowered.api.proxy.Player;
-import net.kyori.adventure.text.Component;
 
 import java.io.File;
 import java.io.InputStream;
