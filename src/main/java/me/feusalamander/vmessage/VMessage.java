@@ -50,7 +50,7 @@ public class VMessage {
         CommandMeta commandMeta = commandManager.metaBuilder("Vmessage")
                 .plugin(this)
                 .build();
-        SimpleCommand command = new ReloadCommand(dataDirectory, configuration);
+        SimpleCommand command = new ReloadCommand(configuration);
         commandManager.register(commandMeta, command);
         CommandMeta sendmeta = commandManager.metaBuilder("sendall")
                 .plugin(this)
