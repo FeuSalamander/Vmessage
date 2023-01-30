@@ -31,7 +31,7 @@ public final class ReloadCommand implements SimpleCommand {
 
     @Override
     public boolean hasPermission(final Invocation invocation) {
-        return invocation.source().hasPermission("vmessage.command");
+        return invocation.source().hasPermission("vmessage.reload");
     }
 
     private static final List<String> suggestion = List.of("reload");

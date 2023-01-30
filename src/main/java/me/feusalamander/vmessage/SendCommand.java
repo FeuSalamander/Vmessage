@@ -15,6 +15,9 @@ public final class SendCommand implements SimpleCommand {
 
     @Override
     public void execute(final Invocation invocation) {
+        if(!hasPermission(invocation)){
+            return;
+        }
         final CommandSource source = invocation.source();
         final String[] args = invocation.arguments();
         if (args.length == 0) {
