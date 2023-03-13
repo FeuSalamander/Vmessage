@@ -18,6 +18,7 @@ public final class Configuration {
     private boolean leaveEnabled;
     private boolean changeEnabled;
     private boolean minimessage;
+    private boolean all;
     private Toml config;
     private static File file;
 
@@ -33,6 +34,7 @@ public final class Configuration {
         changeEnabled = config.getBoolean("Server-change.enabled", false);
 
         minimessage = config.getBoolean("Message-format.minimessage");
+        all = config.getBoolean("Message.all", false);
         this.config = config;
     }
 
@@ -98,6 +100,9 @@ public final class Configuration {
     public boolean isMinimessageEnabled(){
         return  this.minimessage;
     }
+    public boolean isAllEnabled(){
+        return  this.all;
+    }
     void reload(){
         config = config.read(file);
         this.messageFormat = config.getString("Message.format");
@@ -111,5 +116,6 @@ public final class Configuration {
         this.changeEnabled = config.getBoolean("Server-change.enabled");
 
         this.minimessage = config.getBoolean("Message-format.minimessage");
+        all = config.getBoolean("Message.all", false);
     }
 }

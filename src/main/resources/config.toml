@@ -9,6 +9,7 @@ minimessage = false
 #- "#message#" : return the player's message
 #- "#server#" : return the player's server name
 format = "&a(#server#) #prefix# #player# &8&l> &r#message#"
+all = false #if the formated message is sent even in the server where the player is located (can cause some issues with other plugins)
 enabled = true
 [Join]
 #place holders:

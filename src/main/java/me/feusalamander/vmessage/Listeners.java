@@ -132,10 +132,15 @@ public final class Listeners {
         } else {
             finalMessage = SERIALIZER.deserialize(message);
         }
-        proxyServer.getAllServers().forEach(server -> {
-            if (!Objects.equals(p.getCurrentServer().map(ServerConnection::getServerInfo).orElse(null), server.getServerInfo())) {
-                server.sendMessage(finalMessage);
-            }
-        });
+        if(configuration.isAllEnabled()){
+            proxyServer.getAllServers().forEach(server -> server.sendMessage(finalMessage));
+        }else {
+            proxyServer.getAllServers().forEach(server -> {
+                if (!Objects.equals(p.getCurrentServer().map(ServerConnection::getServerInfo).orElse(null), server.getServerInfo())) {
+                    server.sendMessage(finalMessage);
+                }
+            });
+        }
+
     }
 }
