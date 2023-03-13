@@ -41,6 +41,9 @@ public final class Listeners {
         if (!configuration.isMessageEnabled()) {
             return;
         }
+        if(configuration.isAllEnabled()){
+            e.setResult(PlayerChatEvent.ChatResult.message(""));
+        }
         message(e.getPlayer(), e.getMessage());
     }
 
