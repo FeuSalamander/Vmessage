@@ -14,16 +14,18 @@ enabled = true
 [Join]
 #place holders:
 #- "#player#" : return the player name
+#- "#server#" : return the new player's server name
 #- "#prefix#" : return the player's luckperms prefix
 #- "#suffix#" : return the player's luckperms suffix
-format = "&7#prefix# #player# &ejoined the network"
+format = "&7#prefix# #player# &ejoined &7#server#"
 enabled = true
 [Leave]
 #place holders:
 #- "#player#" : return the player name
+#- "#oldserver#" : return the previous player's server name
 #- "#prefix#" : return the player's luckperms prefix
 #- "#suffix#" : return the player's luckperms suffix
-format = "#&7prefix# #player# &eleft the network"
+format = "#&7prefix# #player# &eleft &7#oldserver#"
 enabled = true
 [Server-change]
 #place holders:
