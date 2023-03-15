@@ -116,11 +116,13 @@ public final class Listeners {
 
     private String luckperms(String message, Player p) {
         User user = luckPermsAPI.getPlayerAdapter(Player.class).getUser(p);
-        if (message.contains("#prefix#")) {
-            message = message.replace("#prefix#", Objects.requireNonNull(user.getCachedData().getMetaData().getPrefix()));
+        String prefix = user.getCachedData().getMetaData().getPrefix();
+        String suffix = user.getCachedData().getMetaData().getPrefix();
+        if (message.contains("#prefix#")&&prefix != null) {
+            message = message.replace("#prefix#", prefix);
         }
-        if (message.contains("#suffix#")) {
-            message = message.replace("#suffix#", Objects.requireNonNull(user.getCachedData().getMetaData().getSuffix()));
+        if (message.contains("#suffix#")&&suffix != null) {
+            message = message.replace("#suffix#", suffix);
         }
         return message;
     }
