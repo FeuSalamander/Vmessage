@@ -53,11 +53,13 @@ public final class Listeners {
             return;
         }
         Player p = e.getPlayer();
-        if (p.getCurrentServer().isEmpty()) {
+        Optional<ServerConnection> server = p.getCurrentServer();
+        if (server.isEmpty()) {
             return;
         }
         String message = configuration.getLeaveFormat()
-                .replace("#player#", p.getUsername());
+                .replace("#player#", p.getUsername())
+                .replace("#oldserver#", server.get().getServerInfo().getName());
         if (luckPermsAPI != null) {
             message = luckperms(message, p);
         }
@@ -98,7 +100,9 @@ public final class Listeners {
             if (!configuration.isJoinEnabled()) {
                 return;
             }
-            String message = configuration.getJoinFormat().replace("#player#", p.getUsername());
+            String message = configuration.getJoinFormat()
+                    .replace("#player#", p.getUsername())
+                    .replace("#server#", actual.getServerInfo().getName());
             if (luckPermsAPI != null) {
                 message = luckperms(message, p);
             }
