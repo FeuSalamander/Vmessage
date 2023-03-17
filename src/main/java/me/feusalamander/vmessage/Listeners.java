@@ -8,6 +8,8 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
+import net.kyori.adventure.chat.ChatType;
+import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -42,7 +44,7 @@ public final class Listeners {
             return;
         }
         if(configuration.isAllEnabled()){
-            e.setResult(PlayerChatEvent.ChatResult.message(""));
+            e.setResult(PlayerChatEvent.ChatResult.denied());
         }
         message(e.getPlayer(), e.getMessage());
     }
