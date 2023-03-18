@@ -8,8 +8,6 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
-import net.kyori.adventure.chat.ChatType;
-import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -19,6 +17,7 @@ import net.luckperms.api.model.user.User;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.SortedMap;
 
 public final class Listeners {
     public static final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.builder()
@@ -118,14 +117,23 @@ public final class Listeners {
 
     private String luckperms(String message, Player p) {
         User user = luckPermsAPI.getPlayerAdapter(Player.class).getUser(p);
-        String prefix = user.getCachedData().getMetaData().getPrefix();
-        String suffix = user.getCachedData().getMetaData().getPrefix();
-        if (message.contains("#prefix#")&&prefix != null) {
+        SortedMap<Integer, String> prefixes = user.getCachedData().getMetaData().getPrefixes();
+        SortedMap<Integer, String> suffixes = user.getCachedData().getMetaData().getSuffixes();
+        if (message.contains("#prefix#")&&prefixes.size()>0) {
+            String prefix = "";
+            for(int i = 0; i<prefixes.size(); i++){
+                prefix = prefix+prefixes.get(i);
+            }
             message = message.replace("#prefix#", prefix);
         }
-        if (message.contains("#suffix#")&&suffix != null) {
+        if (message.contains("#suffix#")&&suffixes.size()>0) {
+            String suffix = "";
+            for(int i = 0; i<suffixes.size(); i++){
+                suffix = suffix+suffixes.get(i);
+            }
             message = message.replace("#suffix#", suffix);
         }
+        message = message.replace("#prefix#", "").replace("#suffix#", "");
         return message;
     }
 
