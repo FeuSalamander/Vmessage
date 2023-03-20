@@ -12,13 +12,12 @@ import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.slf4j.Logger;
 
-import java.io.File;
 import java.nio.file.Path;
 
 @Plugin(
         id = "vmessage",
         name = "Vmessage",
-        version = "1.5.2",
+        version = "1.5.3",
         description = "A velocity plugin that creates a multi server chat for the network",
         authors = {"FeuSalamander"},
         dependencies = { @Dependency(id = "luckperms", optional = true) }
