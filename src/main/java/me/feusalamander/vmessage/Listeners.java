@@ -1,9 +1,11 @@
 package me.feusalamander.vmessage;
 
+import com.google.common.annotations.Beta;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
+import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
@@ -13,12 +15,18 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.cacheddata.CachedMetaData;
+import net.luckperms.api.context.Context;
+import net.luckperms.api.context.ContextManager;
 import net.luckperms.api.model.user.User;
 
+import java.net.ProtocolException;
+import java.security.SignatureException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedMap;
-
+import java.util.concurrent.CompletionException;
+@SuppressWarnings("UnstableApiUsage")
 public final class Listeners {
     public static final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.builder()
             .character('&')
@@ -29,7 +37,7 @@ public final class Listeners {
     private final Configuration configuration;
     private final ProxyServer proxyServer;
 
-    Listeners(ProxyServer proxyServer, Configuration configuration) {
+    Listeners(final ProxyServer proxyServer, final Configuration configuration) {
         if (proxyServer.getPluginManager().getPlugin("luckperms").isPresent()) {
             this.luckPermsAPI = LuckPermsProvider.get();
         }
@@ -38,7 +46,7 @@ public final class Listeners {
     }
 
     @Subscribe
-    private void onMessage(PlayerChatEvent e) {
+    private void onMessage(final PlayerChatEvent e) {
         if (!configuration.isMessageEnabled()) {
             return;
         }
@@ -49,12 +57,12 @@ public final class Listeners {
     }
 
     @Subscribe
-    private void onLeave(DisconnectEvent e) {
+    private void onLeave(final DisconnectEvent e) {
         if (!configuration.isLeaveEnabled()) {
             return;
         }
-        Player p = e.getPlayer();
-        Optional<ServerConnection> server = p.getCurrentServer();
+        final Player p = e.getPlayer();
+        final Optional<ServerConnection> server = p.getCurrentServer();
         if (server.isEmpty()) {
             return;
         }
@@ -73,18 +81,18 @@ public final class Listeners {
     }
 
     @Subscribe
-    private void onChange(ServerConnectedEvent e) {
+    private void onChange(final ServerPostConnectEvent e) {
         if (!configuration.isChangeEnabled() && !configuration.isJoinEnabled()) {
             return;
         }
-        Optional<RegisteredServer> server = e.getPreviousServer();
-        Player p = e.getPlayer();
-        RegisteredServer actual = e.getServer();
-        if (server.isPresent()) {
+        final RegisteredServer pre = e.getPreviousServer();
+        final Player p = e.getPlayer();
+        final Optional<ServerConnection> serverConnection = e.getPlayer().getCurrentServer();
+        if (pre != null&&serverConnection.isPresent()) {
             if (!configuration.isChangeEnabled()) {
                 return;
             }
-            RegisteredServer pre = server.get();
+            final ServerConnection actual = serverConnection.get();
             String message = configuration.getChangeFormat()
                     .replace("#player#", p.getUsername())
                     .replace("#oldserver#", pre.getServerInfo().getName())
@@ -97,13 +105,13 @@ public final class Listeners {
             } else {
                 proxyServer.sendMessage(SERIALIZER.deserialize(message));
             }
-        } else {
+        } else if (serverConnection.isPresent()){
             if (!configuration.isJoinEnabled()) {
                 return;
             }
             String message = configuration.getJoinFormat()
                     .replace("#player#", p.getUsername())
-                    .replace("#server#", actual.getServerInfo().getName());
+                    .replace("#server#", serverConnection.get().getServerInfo().getName());
             if (luckPermsAPI != null) {
                 message = luckperms(message, p);
             }
@@ -115,10 +123,10 @@ public final class Listeners {
         }
     }
 
-    private String luckperms(String message, Player p) {
-        User user = luckPermsAPI.getPlayerAdapter(Player.class).getUser(p);
-        String prefix = user.getCachedData().getMetaData().getPrefix();
-        String suffix = user.getCachedData().getMetaData().getPrefix();
+    private String luckperms(String message, final Player p) {
+        final CachedMetaData data = luckPermsAPI.getPlayerAdapter(Player.class).getMetaData(p);
+        final String prefix = data.getPrefix();
+        final String suffix = data.getSuffix();
         if (message.contains("#prefix#")&&prefix != null) {
             message = message.replace("#prefix#", prefix);
         }
@@ -129,7 +137,7 @@ public final class Listeners {
         return message;
     }
 
-    public void message(Player p, String m) {
+    public void message(final Player p, final String m) {
         String message = configuration.getMessageFormat()
                 .replace("#player#", p.getUsername())
                 .replace("#message#", m)
@@ -144,7 +152,7 @@ public final class Listeners {
             finalMessage = SERIALIZER.deserialize(message);
         }
         if(configuration.isAllEnabled()){
-            proxyServer.getAllServers().forEach(server -> server.sendMessage(finalMessage));
+            proxyServer.sendMessage(finalMessage);
         }else {
             proxyServer.getAllServers().forEach(server -> {
                 if (!Objects.equals(p.getCurrentServer().map(ServerConnection::getServerInfo).orElse(null), server.getServerInfo())) {
