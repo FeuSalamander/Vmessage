@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.SortedMap;
 import java.util.concurrent.CompletionException;
-@SuppressWarnings("UnstableApiUsage")
+@SuppressWarnings({"UnstableApiUsage", "deprecation"})
 public final class Listeners {
     public static final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.builder()
             .character('&')
@@ -138,25 +138,28 @@ public final class Listeners {
     }
 
     public void message(final Player p, final String m) {
+        final boolean permission = p.hasPermission("vmessage.minimessage");
         String message = configuration.getMessageFormat()
                 .replace("#player#", p.getUsername())
-                .replace("#message#", m)
                 .replace("#server#", p.getCurrentServer().orElseThrow().getServerInfo().getName());
         if (luckPermsAPI != null) {
             message = luckperms(message, p);
         }
-        final Component finalMessage;
+        if(permission)message = message.replace("#message#", m);
+        Component finalMessage;
         if (configuration.isMinimessageEnabled()) {
             finalMessage = mm.deserialize(message.replace("§", ""));
         } else {
             finalMessage = SERIALIZER.deserialize(message);
         }
+        if(!permission)finalMessage = finalMessage.replaceText("#message#", Component.text(m));
         if(configuration.isAllEnabled()){
             proxyServer.sendMessage(finalMessage);
         }else {
+            final Component FMessage = finalMessage;
             proxyServer.getAllServers().forEach(server -> {
                 if (!Objects.equals(p.getCurrentServer().map(ServerConnection::getServerInfo).orElse(null), server.getServerInfo())) {
-                    server.sendMessage(finalMessage);
+                    server.sendMessage(FMessage);
                 }
             });
         }
