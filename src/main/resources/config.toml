@@ -1,3 +1,4 @@
+#you can use placeholders from placeholder api
 [Message-format]
 #set it to true to use MiniMessage and false to use hex colors
 minimessage = false

@@ -1,10 +1,8 @@
 package me.feusalamander.vmessage;
 
-import com.google.common.annotations.Beta;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
-import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -16,16 +14,14 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
-import net.luckperms.api.context.Context;
-import net.luckperms.api.context.ContextManager;
-import net.luckperms.api.model.user.User;
+import net.william278.papiproxybridge.api.PlaceholderAPI;
+import net.william278.papiproxybridge.user.OnlineUser;
 
-import java.net.ProtocolException;
-import java.security.SignatureException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.SortedMap;
-import java.util.concurrent.CompletionException;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
+
 @SuppressWarnings({"UnstableApiUsage", "deprecation"})
 public final class Listeners {
     public static final LegacyComponentSerializer SERIALIZER = LegacyComponentSerializer.builder()
@@ -34,6 +30,7 @@ public final class Listeners {
             .build();
     public static final MiniMessage mm = MiniMessage.miniMessage();
     private LuckPerms luckPermsAPI;
+    private PlaceholderAPI placeholderAPI;
     private final Configuration configuration;
     private final ProxyServer proxyServer;
 
@@ -41,10 +38,12 @@ public final class Listeners {
         if (proxyServer.getPluginManager().getPlugin("luckperms").isPresent()) {
             this.luckPermsAPI = LuckPermsProvider.get();
         }
+        if (proxyServer.getPluginManager().getPlugin("papiproxybridge").isPresent()) {
+            this.placeholderAPI = PlaceholderAPI.getInstance();
+        }
         this.configuration = configuration;
         this.proxyServer = proxyServer;
     }
-
     @Subscribe
     private void onMessage(final PlayerChatEvent e) {
         if (!configuration.isMessageEnabled()) {
@@ -55,7 +54,6 @@ public final class Listeners {
         }
         message(e.getPlayer(), e.getMessage());
     }
-
     @Subscribe
     private void onLeave(final DisconnectEvent e) {
         if (!configuration.isLeaveEnabled()) {
@@ -66,7 +64,9 @@ public final class Listeners {
         if (server.isEmpty()) {
             return;
         }
-        String message = configuration.getLeaveFormat()
+        String message = configuration.getLeaveFormat();
+        message = placeholder(message, p);
+        message = message
                 .replace("#player#", p.getUsername())
                 .replace("#oldserver#", server.get().getServerInfo().getName());
         if (luckPermsAPI != null) {
@@ -79,7 +79,6 @@ public final class Listeners {
         }
 
     }
-
     @Subscribe
     private void onChange(final ServerPostConnectEvent e) {
         if (!configuration.isChangeEnabled() && !configuration.isJoinEnabled()) {
@@ -93,7 +92,9 @@ public final class Listeners {
                 return;
             }
             final ServerConnection actual = serverConnection.get();
-            String message = configuration.getChangeFormat()
+            String message = configuration.getChangeFormat();
+            message = placeholder(message, p);
+            message = message
                     .replace("#player#", p.getUsername())
                     .replace("#oldserver#", pre.getServerInfo().getName())
                     .replace("#server#", actual.getServerInfo().getName());
@@ -109,7 +110,9 @@ public final class Listeners {
             if (!configuration.isJoinEnabled()) {
                 return;
             }
-            String message = configuration.getJoinFormat()
+            String message = configuration.getJoinFormat();
+            message = placeholder(message, p);
+            message = message
                     .replace("#player#", p.getUsername())
                     .replace("#server#", serverConnection.get().getServerInfo().getName());
             if (luckPermsAPI != null) {
@@ -122,7 +125,6 @@ public final class Listeners {
             }
         }
     }
-
     private String luckperms(String message, final Player p) {
         final CachedMetaData data = luckPermsAPI.getPlayerAdapter(Player.class).getMetaData(p);
         final String prefix = data.getPrefix();
@@ -136,10 +138,18 @@ public final class Listeners {
         message = message.replace("#prefix#", "").replace("#suffix#", "");
         return message;
     }
-
+    private String placeholder(String message, final Player player){
+        if(placeholderAPI == null)return message;
+        UUID p = player.getUniqueId();
+        AtomicReference<String> formated = new AtomicReference<>("");
+        placeholderAPI.formatPlaceholders("Hello %player_name%!", p).thenAccept(formatedd -> {proxyServer.sendMessage(Component.text("test: "+formatedd));});
+        return formated.get();
+    }
     public void message(final Player p, final String m) {
         final boolean permission = p.hasPermission("vmessage.minimessage");
-        String message = configuration.getMessageFormat()
+        String message = configuration.getMessageFormat();
+        message = placeholder(message, p);
+        message = message
                 .replace("#player#", p.getUsername())
                 .replace("#server#", p.getCurrentServer().orElseThrow().getServerInfo().getName());
         if (luckPermsAPI != null) {

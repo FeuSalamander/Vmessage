@@ -20,7 +20,10 @@ import java.nio.file.Path;
         version = "1.5.3",
         description = "A velocity plugin that creates a multi server chat for the network",
         authors = {"FeuSalamander"},
-        dependencies = { @Dependency(id = "luckperms", optional = true) }
+        dependencies = {
+                @Dependency(id = "luckperms", optional = true),
+                @Dependency(id = "papiproxybridge",optional = true)
+        }
 )
 public class VMessage {
     private final ProxyServer proxy;
