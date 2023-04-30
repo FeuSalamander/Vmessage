@@ -141,9 +141,8 @@ public final class Listeners {
     private String placeholder(String message, final Player player){
         if(placeholderAPI == null)return message;
         UUID p = player.getUniqueId();
-        AtomicReference<String> formated = new AtomicReference<>("");
         placeholderAPI.formatPlaceholders("Hello %player_name%!", p).thenAccept(formatedd -> {proxyServer.sendMessage(Component.text("test: "+formatedd));});
-        return formated.get();
+        return message;
     }
     public void message(final Player p, final String m) {
         final boolean permission = p.hasPermission("vmessage.minimessage");
