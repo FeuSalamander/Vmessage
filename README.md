@@ -1,3 +1,4 @@
+![](https://github.com/FeuSalamander/Vmessage/blob/main/src/main/resources/vmessagedesc.jpg?raw=true)
 ![](https://github.com/FeuSalamander/Vmessage/blob/main/src/main/resources/Vmessage.PNG?raw=true)
 **V-Message | Simple Global Chatting, Join/leave/change message w/ LuckPerms Support for all the messages**
 
