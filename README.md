@@ -1,5 +1,4 @@
-![](https://github.com/FeuSalamander/Vmessage/blob/main/src/main/resources/vmessage.desc.JPG?raw=true)
-![](https://github.com/FeuSalamander/Vmessage/blob/main/src/main/resources/Vmessage.PNG?raw=true)
+![](https://github.com/FeuSalamander/Vmessage/blob/main/src/main/resources/vmessage.desc.jpg?raw=true)
 **V-Message | Simple Global Chatting, Join/leave/change message w/ LuckPerms Support for all the messages**
 
 **Ever wanted to have your messages sent globally across your Velocity proxy with LuckPerms ranks ? Here's a simple plugin to do just that!**
