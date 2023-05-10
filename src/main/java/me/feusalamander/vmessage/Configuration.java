@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 
 public final class Configuration {
@@ -21,6 +22,10 @@ public final class Configuration {
     private boolean all;
     private Toml config;
     private static File file;
+    private List<String> messagecmd;
+    private List<String> joincmd;
+    private List<String> leavecmd;
+    private List<String> changecmd;
 
     Configuration(Toml config) {
         messageFormat = config.getString("Message.format", "");
@@ -32,6 +37,11 @@ public final class Configuration {
         joinEnabled = config.getBoolean("Join.enabled", false);
         leaveEnabled = config.getBoolean("Leave.enabled", false);
         changeEnabled = config.getBoolean("Server-change.enabled", false);
+
+        messagecmd = config.getList("Message.commands");
+        joincmd = config.getList("Join.commands");
+        leavecmd = config.getList("Leave.commands");
+        changecmd = config.getList("Server-change.commands");
 
         minimessage = config.getBoolean("Message-format.minimessage");
         all = config.getBoolean("Message.all", false);
@@ -103,6 +113,18 @@ public final class Configuration {
     public boolean isAllEnabled(){
         return  this.all;
     }
+    public List<String> getMessagecmd(){
+        return this.messagecmd;
+    }
+    public List<String> getJoincmd(){
+        return this.joincmd;
+    }
+    public List<String> getLeavecmd(){
+        return this.leavecmd;
+    }
+    public List<String> getChangecmd(){
+        return this.changecmd;
+    }
     void reload(){
         config = config.read(file);
         this.messageFormat = config.getString("Message.format");
@@ -114,6 +136,11 @@ public final class Configuration {
         this.joinEnabled = config.getBoolean("Join.enabled");
         this.leaveEnabled = config.getBoolean("Leave.enabled");
         this.changeEnabled = config.getBoolean("Server-change.enabled");
+
+        messagecmd = config.getList("Message.commands");
+        joincmd = config.getList("Join.commands");
+        leavecmd = config.getList("Leave.commands");
+        changecmd = config.getList("Server-change.commands");
 
         this.minimessage = config.getBoolean("Message-format.minimessage");
         all = config.getBoolean("Message.all", false);

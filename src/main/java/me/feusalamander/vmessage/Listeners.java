@@ -14,13 +14,9 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
-import net.william278.papiproxybridge.api.PlaceholderAPI;
-import net.william278.papiproxybridge.user.OnlineUser;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings({"UnstableApiUsage", "deprecation"})
 public final class Listeners {
@@ -30,16 +26,12 @@ public final class Listeners {
             .build();
     public static final MiniMessage mm = MiniMessage.miniMessage();
     private LuckPerms luckPermsAPI;
-    private PlaceholderAPI placeholderAPI;
     private final Configuration configuration;
     private final ProxyServer proxyServer;
 
     Listeners(final ProxyServer proxyServer, final Configuration configuration) {
         if (proxyServer.getPluginManager().getPlugin("luckperms").isPresent()) {
             this.luckPermsAPI = LuckPermsProvider.get();
-        }
-        if (proxyServer.getPluginManager().getPlugin("papiproxybridge").isPresent()) {
-            this.placeholderAPI = PlaceholderAPI.getInstance();
         }
         this.configuration = configuration;
         this.proxyServer = proxyServer;
@@ -59,13 +51,13 @@ public final class Listeners {
         if (!configuration.isLeaveEnabled()) {
             return;
         }
+        if(!configuration.getLeavecmd().isEmpty())for(String s : configuration.getLeavecmd()){proxyServer.getCommandManager().executeAsync(proxyServer.getConsoleCommandSource(), s);}
         final Player p = e.getPlayer();
         final Optional<ServerConnection> server = p.getCurrentServer();
         if (server.isEmpty()) {
             return;
         }
         String message = configuration.getLeaveFormat();
-        message = placeholder(message, p);
         message = message
                 .replace("#player#", p.getUsername())
                 .replace("#oldserver#", server.get().getServerInfo().getName());
@@ -91,9 +83,9 @@ public final class Listeners {
             if (!configuration.isChangeEnabled()) {
                 return;
             }
+            if(!configuration.getChangecmd().isEmpty())for(String s : configuration.getChangecmd()){proxyServer.getCommandManager().executeAsync(proxyServer.getConsoleCommandSource(), s);}
             final ServerConnection actual = serverConnection.get();
             String message = configuration.getChangeFormat();
-            message = placeholder(message, p);
             message = message
                     .replace("#player#", p.getUsername())
                     .replace("#oldserver#", pre.getServerInfo().getName())
@@ -110,8 +102,8 @@ public final class Listeners {
             if (!configuration.isJoinEnabled()) {
                 return;
             }
+            if(!configuration.getJoincmd().isEmpty())for(String s : configuration.getJoincmd()){proxyServer.getCommandManager().executeAsync(proxyServer.getConsoleCommandSource(), s);}
             String message = configuration.getJoinFormat();
-            message = placeholder(message, p);
             message = message
                     .replace("#player#", p.getUsername())
                     .replace("#server#", serverConnection.get().getServerInfo().getName());
@@ -138,16 +130,10 @@ public final class Listeners {
         message = message.replace("#prefix#", "").replace("#suffix#", "");
         return message;
     }
-    private String placeholder(String message, final Player player){
-        if(placeholderAPI == null)return message;
-        UUID p = player.getUniqueId();
-        placeholderAPI.formatPlaceholders("Hello %player_name%!", p).thenAccept(formatedd -> {proxyServer.sendMessage(Component.text("test: "+formatedd));});
-        return message;
-    }
     public void message(final Player p, final String m) {
+        if(!configuration.getMessagecmd().isEmpty())for(String s : configuration.getMessagecmd()){proxyServer.getCommandManager().executeAsync(proxyServer.getConsoleCommandSource(), s);}
         final boolean permission = p.hasPermission("vmessage.minimessage");
         String message = configuration.getMessageFormat();
-        message = placeholder(message, p);
         message = message
                 .replace("#player#", p.getUsername())
                 .replace("#server#", p.getCurrentServer().orElseThrow().getServerInfo().getName());

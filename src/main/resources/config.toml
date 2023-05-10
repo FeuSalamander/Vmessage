@@ -11,6 +11,7 @@ minimessage = false
 #- "#server#" : return the player's server name
 format = "&a(#server#) #prefix# #player# &8&l> &r#message#"
 all = false #if the formated message is sent even in the server where the player is located (can cause some issues with other plugins)
+commands = []
 enabled = true
 [Join]
 #place holders:
@@ -19,6 +20,7 @@ enabled = true
 #- "#prefix#" : return the player's luckperms prefix
 #- "#suffix#" : return the player's luckperms suffix
 format = "&7#prefix# #player# &ejoined &7#server#"
+commands = [] #The proxy commands which are executed (no / in the commands)
 enabled = true
 [Leave]
 #place holders:
@@ -27,6 +29,7 @@ enabled = true
 #- "#prefix#" : return the player's luckperms prefix
 #- "#suffix#" : return the player's luckperms suffix
 format = "#&7prefix# #player# &eleft &7#oldserver#"
+commands = []
 enabled = true
 [Server-change]
 #place holders:
@@ -36,4 +39,5 @@ enabled = true
 #- "#oldserver#" : return the previous player's server name
 #- "#server#" : return the new player's server name
 format = "&7#prefix# #player# &eleft &c#oldserver# &eto join &a#server#"
+commands = []
 enabled = true
