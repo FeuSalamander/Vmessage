@@ -56,13 +56,23 @@ public final class Listeners {
             return;
         }
 
-        if(!configuration.getLeavecmd().isEmpty())for(String s : configuration.getLeavecmd()){proxyServer.getCommandManager().executeAsync(proxyServer.getConsoleCommandSource(), s);}
         final Player p = e.getPlayer();
         final Optional<ServerConnection> server = p.getCurrentServer();
         if (server.isEmpty()) {
             return;
         }
         String message = configuration.getLeaveFormat();
+        if(!configuration.getLeavecmd().isEmpty())
+            for(String s : configuration.getLeavecmd()){
+                s = s
+                        .replace("#player#", p.getUsername())
+                        .replace("#oldserver#", server.get().getServerInfo().getName());
+                if (luckPermsAPI != null) {
+                    s = luckperms(s, p);
+                }
+                proxyServer.getCommandManager().executeAsync(proxyServer.getConsoleCommandSource(), s);
+            }
+        if(message.isEmpty())return;
         message = message
                 .replace("#player#", p.getUsername())
                 .replace("#oldserver#", server.get().getServerInfo().getName());
@@ -88,9 +98,20 @@ public final class Listeners {
             if (!configuration.isChangeEnabled()) {
                 return;
             }
-            if(!configuration.getChangecmd().isEmpty())for(String s : configuration.getChangecmd()){proxyServer.getCommandManager().executeAsync(proxyServer.getConsoleCommandSource(), s);}
             final ServerConnection actual = serverConnection.get();
             String message = configuration.getChangeFormat();
+            if(!configuration.getChangecmd().isEmpty())
+                for(String s : configuration.getChangecmd()){
+                    s = s
+                            .replace("#player#", p.getUsername())
+                            .replace("#oldserver#", pre.getServerInfo().getName())
+                            .replace("#server#", actual.getServerInfo().getName());
+                    if (luckPermsAPI != null) {
+                        s = luckperms(s, p);
+                    }
+                    proxyServer.getCommandManager().executeAsync(proxyServer.getConsoleCommandSource(), s);
+                }
+            if(message.isEmpty())return;
             message = message
                     .replace("#player#", p.getUsername())
                     .replace("#oldserver#", pre.getServerInfo().getName())
@@ -107,8 +128,18 @@ public final class Listeners {
             if (!configuration.isJoinEnabled()) {
                 return;
             }
-            if(!configuration.getJoincmd().isEmpty())for(String s : configuration.getJoincmd()){proxyServer.getCommandManager().executeAsync(proxyServer.getConsoleCommandSource(), s);}
+            if(!configuration.getJoincmd().isEmpty())
+                for(String s : configuration.getJoincmd()){
+                    s = s
+                            .replace("#player#", p.getUsername())
+                            .replace("#server#", serverConnection.get().getServerInfo().getName());
+                    if (luckPermsAPI != null) {
+                        s = luckperms(s, p);
+                    }
+                    proxyServer.getCommandManager().executeAsync(proxyServer.getConsoleCommandSource(), s);
+                }
             String message = configuration.getJoinFormat();
+            if(message.isEmpty())return;
             message = message
                     .replace("#player#", p.getUsername())
                     .replace("#server#", serverConnection.get().getServerInfo().getName());
@@ -136,9 +167,19 @@ public final class Listeners {
         return message;
     }
     public void message(final Player p, final String m) {
-        if(!configuration.getMessagecmd().isEmpty())for(String s : configuration.getMessagecmd()){proxyServer.getCommandManager().executeAsync(proxyServer.getConsoleCommandSource(), s);}
-        final boolean permission = p.hasPermission("vmessage.minimessage");
+        if(!configuration.getMessagecmd().isEmpty())
+            for(String s : configuration.getMessagecmd()){
+                s = s
+                        .replace("#player#", p.getUsername())
+                        .replace("#server#", p.getCurrentServer().orElseThrow().getServerInfo().getName());
+                if (luckPermsAPI != null) {
+                    s = luckperms(s, p);
+                }
+                proxyServer.getCommandManager().executeAsync(proxyServer.getConsoleCommandSource(), s);
+            }
         String message = configuration.getMessageFormat();
+        if(message.isEmpty())return;
+        final boolean permission = p.hasPermission("vmessage.minimessage");
         message = message
                 .replace("#player#", p.getUsername())
                 .replace("#server#", p.getCurrentServer().orElseThrow().getServerInfo().getName());
