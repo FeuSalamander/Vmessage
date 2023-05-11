@@ -51,6 +51,11 @@ public final class Listeners {
         if (!configuration.isLeaveEnabled()) {
             return;
         }
+
+        if (!e.getLoginStatus().equals(DisconnectEvent.LoginStatus.SUCCESSFUL_LOGIN)){
+            return;
+        }
+
         if(!configuration.getLeavecmd().isEmpty())for(String s : configuration.getLeavecmd()){proxyServer.getCommandManager().executeAsync(proxyServer.getConsoleCommandSource(), s);}
         final Player p = e.getPlayer();
         final Optional<ServerConnection> server = p.getCurrentServer();
