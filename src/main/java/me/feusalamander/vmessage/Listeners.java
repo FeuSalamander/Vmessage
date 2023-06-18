@@ -62,7 +62,7 @@ public final class Listeners {
             return;
         }
         String message = configuration.getLeaveFormat();
-        if(!configuration.getLeavecmd().isEmpty())
+        if(configuration.getLeavecmd() != null&&!configuration.getLeavecmd().isEmpty())
             for(String s : configuration.getLeavecmd()){
                 s = s
                         .replace("#player#", p.getUsername())
@@ -100,7 +100,7 @@ public final class Listeners {
             }
             final ServerConnection actual = serverConnection.get();
             String message = configuration.getChangeFormat();
-            if(!configuration.getChangecmd().isEmpty())
+            if(configuration.getChangecmd() != null&&!configuration.getChangecmd().isEmpty())
                 for(String s : configuration.getChangecmd()){
                     s = s
                             .replace("#player#", p.getUsername())
@@ -128,7 +128,7 @@ public final class Listeners {
             if (!configuration.isJoinEnabled()) {
                 return;
             }
-            if(!configuration.getJoincmd().isEmpty())
+            if(configuration.getJoincmd() != null&&!configuration.getJoincmd().isEmpty())
                 for(String s : configuration.getJoincmd()){
                     s = s
                             .replace("#player#", p.getUsername())
@@ -167,7 +167,7 @@ public final class Listeners {
         return message;
     }
     public void message(final Player p, final String m) {
-        if(!configuration.getMessagecmd().isEmpty())
+        if(configuration.getMessagecmd() != null&&!configuration.getMessagecmd().isEmpty())
             for(String s : configuration.getMessagecmd()){
                 s = s
                         .replace("#player#", p.getUsername())
