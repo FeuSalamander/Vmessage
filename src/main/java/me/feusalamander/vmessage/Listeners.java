@@ -55,18 +55,24 @@ public final class Listeners {
         if (!e.getLoginStatus().equals(DisconnectEvent.LoginStatus.SUCCESSFUL_LOGIN)){
             return;
         }
-
+        if(e.getPlayer().hasPermission("vmessage.silent.leave")){
+            return;
+        }
         final Player p = e.getPlayer();
         final Optional<ServerConnection> server = p.getCurrentServer();
         if (server.isEmpty()) {
             return;
         }
         String message = configuration.getLeaveFormat();
+        String servername = server.get().getServerInfo().getName();
+        if(configuration.getAliases().contains(servername)){
+            servername = configuration.getAliases().getString(servername);
+        }
         if(configuration.getLeavecmd() != null&&!configuration.getLeavecmd().isEmpty())
             for(String s : configuration.getLeavecmd()){
                 s = s
                         .replace("#player#", p.getUsername())
-                        .replace("#oldserver#", server.get().getServerInfo().getName());
+                        .replace("#oldserver#", servername);
                 if (luckPermsAPI != null) {
                     s = luckperms(s, p);
                 }
@@ -75,7 +81,7 @@ public final class Listeners {
         if(message.isEmpty())return;
         message = message
                 .replace("#player#", p.getUsername())
-                .replace("#oldserver#", server.get().getServerInfo().getName());
+                .replace("#oldserver#", servername);
         if (luckPermsAPI != null) {
             message = luckperms(message, p);
         }
@@ -98,14 +104,25 @@ public final class Listeners {
             if (!configuration.isChangeEnabled()) {
                 return;
             }
+            if(e.getPlayer().hasPermission("vmessage.silent.change")){
+                return;
+            }
             final ServerConnection actual = serverConnection.get();
             String message = configuration.getChangeFormat();
+            String actualservername = actual.getServerInfo().getName();
+            if(configuration.getAliases().contains(actualservername)){
+                actualservername = configuration.getAliases().getString(actualservername);
+            }
+            String oldservername = pre.getServerInfo().getName();
+            if(configuration.getAliases().containsTable(oldservername)){
+                oldservername = configuration.getAliases().getString(oldservername);
+            }
             if(configuration.getChangecmd() != null&&!configuration.getChangecmd().isEmpty())
                 for(String s : configuration.getChangecmd()){
                     s = s
                             .replace("#player#", p.getUsername())
-                            .replace("#oldserver#", pre.getServerInfo().getName())
-                            .replace("#server#", actual.getServerInfo().getName());
+                            .replace("#oldserver#", oldservername)
+                            .replace("#server#", actualservername);
                     if (luckPermsAPI != null) {
                         s = luckperms(s, p);
                     }
@@ -114,8 +131,8 @@ public final class Listeners {
             if(message.isEmpty())return;
             message = message
                     .replace("#player#", p.getUsername())
-                    .replace("#oldserver#", pre.getServerInfo().getName())
-                    .replace("#server#", actual.getServerInfo().getName());
+                    .replace("#oldserver#", oldservername)
+                    .replace("#server#", actualservername);
             if (luckPermsAPI != null) {
                 message = luckperms(message, p);
             }
@@ -128,11 +145,18 @@ public final class Listeners {
             if (!configuration.isJoinEnabled()) {
                 return;
             }
+            if(e.getPlayer().hasPermission("vmessage.silent.join")){
+                return;
+            }
+            String actualservername = serverConnection.get().getServerInfo().getName();
+            if(configuration.getAliases().contains(actualservername)){
+                actualservername = configuration.getAliases().getString(actualservername);
+            }
             if(configuration.getJoincmd() != null&&!configuration.getJoincmd().isEmpty())
                 for(String s : configuration.getJoincmd()){
                     s = s
                             .replace("#player#", p.getUsername())
-                            .replace("#server#", serverConnection.get().getServerInfo().getName());
+                            .replace("#server#", actualservername);
                     if (luckPermsAPI != null) {
                         s = luckperms(s, p);
                     }
@@ -142,7 +166,7 @@ public final class Listeners {
             if(message.isEmpty())return;
             message = message
                     .replace("#player#", p.getUsername())
-                    .replace("#server#", serverConnection.get().getServerInfo().getName());
+                    .replace("#server#", actualservername);
             if (luckPermsAPI != null) {
                 message = luckperms(message, p);
             }
@@ -167,11 +191,15 @@ public final class Listeners {
         return message;
     }
     public void message(final Player p, final String m) {
+        String actualservername = p.getCurrentServer().orElseThrow().getServerInfo().getName();
+        if(configuration.getAliases().contains(actualservername)){
+            actualservername = configuration.getAliases().getString(actualservername);
+        }
         if(configuration.getMessagecmd() != null&&!configuration.getMessagecmd().isEmpty())
             for(String s : configuration.getMessagecmd()){
                 s = s
                         .replace("#player#", p.getUsername())
-                        .replace("#server#", p.getCurrentServer().orElseThrow().getServerInfo().getName());
+                        .replace("#server#", actualservername);
                 if (luckPermsAPI != null) {
                     s = luckperms(s, p);
                 }
@@ -182,7 +210,7 @@ public final class Listeners {
         final boolean permission = p.hasPermission("vmessage.minimessage");
         message = message
                 .replace("#player#", p.getUsername())
-                .replace("#server#", p.getCurrentServer().orElseThrow().getServerInfo().getName());
+                .replace("#server#", actualservername);
         if (luckPermsAPI != null) {
             message = luckperms(message, p);
         }

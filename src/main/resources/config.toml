@@ -41,3 +41,5 @@ enabled = true
 format = "&7#prefix# #player# &eleft &c#oldserver# &eto join &a#server#"
 commands = []
 enabled = true
+[Aliases]
+servername = "Server Name"

@@ -12,4 +12,5 @@
 - **MiniMessage support**
 ![](https://github.com/FeuSalamander/Vmessage/blob/main/src/main/resources/permissions.png?raw=true)
 - **"vmessage.reload" to access to the reload command**
-- **"vmessage.minimessage" the player need to have it to use MiniMessage in his messages**
+- **"vmessage.minimessage" the player needs to have it to use MiniMessage in his messages**
+- **"vmessage.silent. leave,change, join" if the player have it/them, no message will be sent**

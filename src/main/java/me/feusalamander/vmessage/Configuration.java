@@ -26,6 +26,7 @@ public final class Configuration {
     private List<String> joincmd;
     private List<String> leavecmd;
     private List<String> changecmd;
+    private Toml aliases;
 
     Configuration(Toml config) {
         messageFormat = config.getString("Message.format", "");
@@ -38,11 +39,12 @@ public final class Configuration {
         leaveEnabled = config.getBoolean("Leave.enabled", false);
         changeEnabled = config.getBoolean("Server-change.enabled", false);
 
+        aliases = config.getTable("Aliases");
+
         messagecmd = config.getList("Message.commands");
         joincmd = config.getList("Join.commands");
         leavecmd = config.getList("Leave.commands");
         changecmd = config.getList("Server-change.commands");
-
         minimessage = config.getBoolean("Message-format.minimessage");
         all = config.getBoolean("Message.all", false);
         this.config = config;
@@ -125,6 +127,9 @@ public final class Configuration {
     public List<String> getChangecmd(){
         return this.changecmd;
     }
+    public Toml getAliases() {
+        return aliases;
+    }
     void reload(){
         config = config.read(file);
         this.messageFormat = config.getString("Message.format");
@@ -137,12 +142,14 @@ public final class Configuration {
         this.leaveEnabled = config.getBoolean("Leave.enabled");
         this.changeEnabled = config.getBoolean("Server-change.enabled");
 
-        messagecmd = config.getList("Message.commands");
-        joincmd = config.getList("Join.commands");
-        leavecmd = config.getList("Leave.commands");
-        changecmd = config.getList("Server-change.commands");
+        this.aliases = config.getTable("Aliases");
+
+        this.messagecmd = config.getList("Message.commands");
+        this.joincmd = config.getList("Join.commands");
+        this.leavecmd = config.getList("Leave.commands");
+        this.changecmd = config.getList("Server-change.commands");
 
         this.minimessage = config.getBoolean("Message-format.minimessage");
-        all = config.getBoolean("Message.all", false);
+        this.all = config.getBoolean("Message.all", false);
     }
 }

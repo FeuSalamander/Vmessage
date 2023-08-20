@@ -17,7 +17,7 @@ import java.nio.file.Path;
 @Plugin(
         id = "vmessage",
         name = "Vmessage",
-        version = "1.5.5Pre",
+        version = "1.6.0",
         description = "A velocity plugin that creates a multi server chat for the network",
         authors = {"FeuSalamander"},
         dependencies = {
