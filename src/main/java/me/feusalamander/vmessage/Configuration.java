@@ -26,6 +26,10 @@ public final class Configuration {
     private List<String> joincmd;
     private List<String> leavecmd;
     private List<String> changecmd;
+    private String custom1;
+    private String custom2;
+    private boolean custom1Enabled;
+    private boolean custom2Enabled;
     private Toml aliases;
 
     Configuration(Toml config) {
@@ -47,6 +51,11 @@ public final class Configuration {
         changecmd = config.getList("Server-change.commands");
         minimessage = config.getBoolean("Message-format.minimessage");
         all = config.getBoolean("Message.all", false);
+
+        custom1Enabled = config.getBoolean("Custom-Meta.custom1enabled", false);
+        custom2Enabled = config.getBoolean("Custom-Meta.custom2enabled", false);
+        custom1 = config.getString("Custom-Meta.custom1", "");
+        custom2 = config.getString("Custom-Meta.custom2", "");
         this.config = config;
     }
 
@@ -130,6 +139,10 @@ public final class Configuration {
     public Toml getAliases() {
         return aliases;
     }
+    public boolean isCustom1Enabled() {return this.custom1Enabled;}
+    public boolean isCustom2Enabled() {return this.custom2Enabled;}
+    public String getCustom1() {return this.custom1;}
+    public String getCustom2() {return this.custom2;}
     void reload(){
         config = config.read(file);
         this.messageFormat = config.getString("Message.format");
@@ -151,5 +164,10 @@ public final class Configuration {
 
         this.minimessage = config.getBoolean("Message-format.minimessage");
         this.all = config.getBoolean("Message.all", false);
+
+        this.custom1Enabled = config.getBoolean("Custom-Meta.custom1enabled");
+        this.custom2Enabled = config.getBoolean("Custom-Meta.custom2enabled");
+        this.custom1 = config.getString("Custom-Meta.custom1");
+        this.custom2 = config.getString("Custom-Meta.custom2");
     }
 }
