@@ -46,6 +46,4 @@ servername = "Server Name"
 [Custom-Meta]
 #Enables definition of Custom Luckperms Meta Placeholders
 custom1 = ""
-custom1enabled = false
 custom2 = ""
-custom2enabled = false

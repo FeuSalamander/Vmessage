@@ -181,14 +181,9 @@ public final class Listeners {
         final CachedMetaData data = luckPermsAPI.getPlayerAdapter(Player.class).getMetaData(p);
         final String prefix = data.getPrefix();
         final String suffix = data.getSuffix();
-        String custom1 = null;
-        String custom2 = null;
-        if (configuration.isCustom1Enabled()) {
-            custom1 = data.getMetaValue(configuration.getCustom1());
-        }
-        if (configuration.isCustom2Enabled()) {
-            custom2 = data.getMetaValue(configuration.getCustom2());
-        }
+        final String custom1 = data.getMetaValue(configuration.getCustom1());
+        final String custom2 = data.getMetaValue(configuration.getCustom2());
+
         if (message.contains("#prefix#") && prefix != null) {
             message = message.replace("#prefix#", prefix);
         }
