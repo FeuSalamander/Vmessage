@@ -43,3 +43,7 @@ commands = []
 enabled = true
 [Aliases]
 servername = "Server Name"
+[Custom-Meta]
+#Enables definition of Custom Luckperms Meta Placeholders
+custom1 = ""
+custom2 = ""
