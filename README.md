@@ -10,6 +10,7 @@
 - **Reload command: "/vmessage reload"**
 - **Global message command: "/sendall"**
 - **MiniMessage support**
+- **Discord Integration with this another plugin: https://github.com/fooooooooooooooo/VelocityDiscord**
 ![](https://github.com/FeuSalamander/Vmessage/blob/main/src/main/resources/permissions.png?raw=true)
 - **"vmessage.reload" to access to the reload command**
 - **"vmessage.minimessage" the player needs to have it to use MiniMessage in his messages**
