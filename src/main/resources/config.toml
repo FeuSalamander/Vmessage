@@ -9,6 +9,8 @@ minimessage = false
 #- "#suffix#" : return the player's luckperms suffix
 #- "#message#" : return the player's message
 #- "#server#" : return the player's server name
+#- "#custom1#" : return the player's custom defined luckperms meta keys
+#- "#custom2#" : return the player's custom defined luckperms meta keys
 format = "&a(#server#) #prefix# #player# &8&l> &r#message#"
 all = false #if the formated message is sent even in the server where the player is located (can cause some issues with other plugins)
 commands = []
@@ -19,6 +21,8 @@ enabled = true
 #- "#server#" : return the new player's server name
 #- "#prefix#" : return the player's luckperms prefix
 #- "#suffix#" : return the player's luckperms suffix
+#- "#custom1#" : return the player's custom defined luckperms meta keys
+#- "#custom2#" : return the player's custom defined luckperms meta keys
 format = "&7#prefix# #player# &ejoined &7#server#"
 commands = [] #The proxy commands which are executed (no / in the commands)
 enabled = true
@@ -28,6 +32,8 @@ enabled = true
 #- "#oldserver#" : return the previous player's server name
 #- "#prefix#" : return the player's luckperms prefix
 #- "#suffix#" : return the player's luckperms suffix
+#- "#custom1#" : return the player's custom defined luckperms meta keys
+#- "#custom2#" : return the player's custom defined luckperms meta keys
 format = "#&7prefix# #player# &eleft &7#oldserver#"
 commands = []
 enabled = true
@@ -38,6 +44,8 @@ enabled = true
 #- "#suffix#" : return the player's luckperms suffix
 #- "#oldserver#" : return the previous player's server name
 #- "#server#" : return the new player's server name
+#- "#custom1#" : return the player's custom defined luckperms meta keys
+#- "#custom2#" : return the player's custom defined luckperms meta keys
 format = "&7#prefix# #player# &eleft &c#oldserver# &eto join &a#server#"
 commands = []
 enabled = true
