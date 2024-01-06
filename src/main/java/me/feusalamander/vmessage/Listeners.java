@@ -2,6 +2,7 @@ package me.feusalamander.vmessage;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
+import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import com.velocitypowered.api.event.player.PlayerChatEvent;
 import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.proxy.Player;
@@ -14,7 +15,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
 import net.luckperms.api.cacheddata.CachedMetaData;
-import ooo.foooooooooooo.velocitydiscord.VelocityDiscord;
+
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -101,10 +102,63 @@ public final class Listeners {
         }
         if (configuration.isMinimessageEnabled()) {
             proxyServer.sendMessage(mm.deserialize(message.replace("§", "")));
-            if(VMessage.isDiscord())VelocityDiscord.getDiscord().sendMessage(discordRaw);
         } else {
             proxyServer.sendMessage(SERIALIZER.deserialize(message));
-            if(VMessage.isDiscord())VelocityDiscord.getDiscord().sendMessage(discordRaw);
+        }
+
+    }
+    @Subscribe
+    private void onKick(final KickedFromServerEvent e) {
+        if (!configuration.isKickEnabled()) {
+            return;
+        }
+        if(e.getPlayer().hasPermission("vmessage.silent.leave")){
+            return;
+        }
+        final Player p = e.getPlayer();
+        final Optional<ServerConnection> server = p.getCurrentServer();
+        if (server.isEmpty()) {
+            return;
+        }
+        String message = configuration.getKickFormat();
+        String servername = server.get().getServerInfo().getName();
+        if(configuration.getAliases().contains(servername)){
+            servername = configuration.getAliases().getString(servername);
+        }
+        if(configuration.getKickcmd() != null&&!configuration.getKickcmd().isEmpty())
+            for(String s : configuration.getKickcmd()){
+                s = s
+                        .replace("#player#", p.getUsername())
+                        .replace("#oldserver#", servername);
+                if (luckPermsAPI != null) {
+                    s = luckperms(s, p);
+                }
+                proxyServer.getCommandManager().executeAsync(proxyServer.getConsoleCommandSource(), s);
+            }
+        if(message.isEmpty())return;
+        message = message
+                .replace("#player#", p.getUsername())
+                .replace("#oldserver#", servername);
+        if (luckPermsAPI != null) {
+            message = luckperms(message, p);
+        }
+        String discordRaw;
+        if(VMessage.isDiscord()){
+            String dump = "";
+            String[] dump2 = message.replace("&", "§").split("§");
+            proxyServer.sendMessage(Component.text(Arrays.toString(dump2)));
+            for(String string : dump2){
+                if(string.length() >1)
+                    dump = dump+string.substring(1);
+            }
+            discordRaw = dump;
+        } else {
+            discordRaw = message;
+        }
+        if (configuration.isMinimessageEnabled()) {
+            proxyServer.sendMessage(mm.deserialize(message.replace("§", "")));
+        } else {
+            proxyServer.sendMessage(SERIALIZER.deserialize(message));
         }
 
     }
@@ -167,10 +221,8 @@ public final class Listeners {
             }
             if (configuration.isMinimessageEnabled()) {
                 proxyServer.sendMessage(mm.deserialize(message.replace("§", "")));
-                if(VMessage.isDiscord())VelocityDiscord.getDiscord().sendMessage(discordRaw);
             } else {
                 proxyServer.sendMessage(SERIALIZER.deserialize(message));
-                if(VMessage.isDiscord())VelocityDiscord.getDiscord().sendMessage(discordRaw);
             }
         } else if (serverConnection.isPresent()){
             if (!configuration.isJoinEnabled()) {
@@ -216,10 +268,8 @@ public final class Listeners {
             }
             if (configuration.isMinimessageEnabled()) {
                 proxyServer.sendMessage(mm.deserialize(message.replace("§", "")));
-                if(VMessage.isDiscord())VelocityDiscord.getDiscord().sendMessage(discordRaw);
             } else {
                 proxyServer.sendMessage(SERIALIZER.deserialize(message));
-                if(VMessage.isDiscord())VelocityDiscord.getDiscord().sendMessage(discordRaw);
             }
         }
     }
@@ -292,13 +342,11 @@ public final class Listeners {
         }
         if(configuration.isAllEnabled()){
             proxyServer.sendMessage(finalMessage);
-            if(VMessage.isDiscord())VelocityDiscord.getDiscord().sendMessage(discordRaw);
         }else {
             final Component FMessage = finalMessage;
             proxyServer.getAllServers().forEach(server -> {
                 if (!Objects.equals(p.getCurrentServer().map(ServerConnection::getServerInfo).orElse(null), server.getServerInfo())) {
                     server.sendMessage(FMessage);
-                    if(VMessage.isDiscord())VelocityDiscord.getDiscord().sendMessage(discordRaw);
                 }
             });
         }

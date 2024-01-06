@@ -13,10 +13,12 @@ public final class Configuration {
     private String messageFormat;
     private String joinFormat;
     private String leaveFormat;
+    private String kickFormat;
     private String changeFormat;
     private boolean messageEnabled;
     private boolean joinEnabled;
     private boolean leaveEnabled;
+    private boolean kickEnabled;
     private boolean changeEnabled;
     private boolean minimessage;
     private boolean all;
@@ -25,6 +27,7 @@ public final class Configuration {
     private List<String> messagecmd;
     private List<String> joincmd;
     private List<String> leavecmd;
+    private List<String> kickcmd;
     private List<String> changecmd;
     private String custom1;
     private String custom2;
@@ -34,11 +37,13 @@ public final class Configuration {
         messageFormat = config.getString("Message.format", "");
         joinFormat = config.getString("Join.format", "");
         leaveFormat = config.getString("Leave.format", "");
+        kickFormat = config.getString("Kick.format", "");
         changeFormat = config.getString("Server-change.format", "");
 
         messageEnabled = config.getBoolean("Message.enabled", false);
         joinEnabled = config.getBoolean("Join.enabled", false);
         leaveEnabled = config.getBoolean("Leave.enabled", false);
+        kickEnabled = config.getBoolean("Kick.enabled", false);
         changeEnabled = config.getBoolean("Server-change.enabled", false);
 
         aliases = config.getTable("Aliases");
@@ -46,6 +51,7 @@ public final class Configuration {
         messagecmd = config.getList("Message.commands");
         joincmd = config.getList("Join.commands");
         leavecmd = config.getList("Leave.commands");
+        kickcmd = config.getList("Kick.commands");
         changecmd = config.getList("Server-change.commands");
         minimessage = config.getBoolean("Message-format.minimessage");
         all = config.getBoolean("Message.all", false);
@@ -94,6 +100,9 @@ public final class Configuration {
     public String getLeaveFormat() {
         return this.leaveFormat;
     }
+    public String getKickFormat() {
+        return this.kickFormat;
+    }
 
     public String getChangeFormat() {
         return this.changeFormat;
@@ -109,6 +118,9 @@ public final class Configuration {
 
     public boolean isLeaveEnabled() {
         return this.leaveEnabled;
+    }
+    public boolean isKickEnabled() {
+        return this.kickEnabled;
     }
 
     public boolean isChangeEnabled() {
@@ -129,6 +141,9 @@ public final class Configuration {
     public List<String> getLeavecmd(){
         return this.leavecmd;
     }
+    public List<String> getKickcmd(){
+        return this.kickcmd;
+    }
     public List<String> getChangecmd(){
         return this.changecmd;
     }
@@ -147,11 +162,13 @@ public final class Configuration {
         this.messageFormat = config.getString("Message.format");
         this.joinFormat = config.getString("Join.format");
         this.leaveFormat = config.getString("Leave.format");
+        this.kickFormat = config.getString("Kick.format");
         this.changeFormat = config.getString("Server-change.format");
 
         this.messageEnabled = config.getBoolean("Message.enabled");
         this.joinEnabled = config.getBoolean("Join.enabled");
         this.leaveEnabled = config.getBoolean("Leave.enabled");
+        this.kickEnabled = config.getBoolean("Kick.enabled");
         this.changeEnabled = config.getBoolean("Server-change.enabled");
 
         this.aliases = config.getTable("Aliases");
@@ -159,6 +176,7 @@ public final class Configuration {
         this.messagecmd = config.getList("Message.commands");
         this.joincmd = config.getList("Join.commands");
         this.leavecmd = config.getList("Leave.commands");
+        this.kickcmd = config.getList("Kick.commands");
         this.changecmd = config.getList("Server-change.commands");
 
         this.minimessage = config.getBoolean("Message-format.minimessage");
