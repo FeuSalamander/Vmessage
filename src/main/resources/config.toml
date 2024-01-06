@@ -37,6 +37,17 @@ enabled = true
 format = "#&7prefix# #player# &eleft &7#oldserver#"
 commands = []
 enabled = true
+[Kick]
+#place holders:
+#- "#player#" : return the player name
+#- "#oldserver#" : return the previous player's server name
+#- "#prefix#" : return the player's luckperms prefix
+#- "#suffix#" : return the player's luckperms suffix
+#- "#custom1#" : return the player's custom defined luckperms meta keys
+#- "#custom2#" : return the player's custom defined luckperms meta keys
+format = "&7#prefix# #player# &ewas kicked from &7#oldserver#"
+commands = [] #The proxy commands which are executed (no / in the commands)
+enabled = true
 [Server-change]
 #place holders:
 #- "#player#" : return the player name
